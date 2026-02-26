@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-timesheet
+    environment:
+      MYSQL_ROOT_PASSWORD: esprit123
+      MYSQL_DATABASE: timesheet
+    ports:
+      - "3306:3306"
+    volumes:
+      - timesheetvol:/var/lib/mysql
+    networks:
+      - timesheet-net
+
+  timesheet:
+    image: timesheet-zeinebkouki-4nids1
+    container_name: timesheet-app
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/timesheet?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: esprit123
+    depends_on:
+      - mysql
+    restart: on-failure
+    networks:
+      - timesheet-net
+
+volumes:
+  timesheetvol:
+
+networks:
+  timesheet-net:
